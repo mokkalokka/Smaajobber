@@ -4,176 +4,554 @@ import ReactDOM from 'react-dom';
 import * as React from 'react';
 import { Component } from 'react-simplified';
 import { HashRouter, Route, NavLink } from 'react-router-dom';
-import { Alert, NavBar, Card, Row, Column, Button } from './widgets';
-import { Student, studentService } from './services';
+import {
+    Alert,
+    NavBar,
+    Card,
+    Row,
+    Column,
+    Button,
+    JobInfo,
+    Filters,
+    MessageInfo,
+    NavSearch
+} from './widgets';
+import {Job, jobService, Message, messageService} from './services';
 
 import { createHashHistory } from 'history';
 const history = createHashHistory(); // Use history.push(...) to programmatically change path, for instance after successfully saving a student
 
 class Menu extends Component {
-  render() {
-    return (
-      <NavBar brand="React example">
-        <NavBar.Link to="/students">Students</NavBar.Link>
-      </NavBar>
-    );
-  }
+    render() {
+        return (
+            <div>
+                <NavBar brand="Småjobber">
+                    <NavBar.Link to={"/category/transport"}>Transport</NavBar.Link>
+                    <NavBar.Link to="/category/handverk">Håndverk</NavBar.Link>
+                    <NavBar.Link to={"/category/diverse"}>Diverse</NavBar.Link>
+                    <NavBar.Link to={"/newjob"}>Legg ut ny jobb</NavBar.Link>
+                </NavBar>
+                <LiveFeed/>
+            </div>
+        );
+    }
 }
 
 class Home extends Component {
-  render() {
-    return <Card title="React example"></Card>;
-  }
+    render() {
+        return (
+            <div className={"pt-3"}>
+                <Row>
+                    <Column width={3}>
+                        <Filters/>
+                    </Column>
+                    <Column>
+                        <JobList/>
+                    </Column>
+                </Row>
+            </div>
+
+        );
+    }
 }
 
-class StudentList extends Component {
-  students: Student[] = [];
+class LiveFeed extends Component {
+    intervalID = 1;
+    state = {
+        jobs: new Array<Job>
+    };
 
-  render() {
-    return (
-      <Card title="Students">
-        {this.students.map(student => (
-          <Row key={student.id}>
-            <Column width={2}>
-              <NavLink activeStyle={{ color: 'darkblue' }} exact to={'/students/' + student.id}>
-                {student.firstName} {student.lastName}
-              </NavLink>
-            </Column>
-            <Column>
-              <NavLink activeStyle={{ color: 'darkblue' }} to={'/students/' + student.id + '/edit'}>
-                edit
-              </NavLink>
-            </Column>
-          </Row>
-        ))}
-      </Card>
-    );
-  }
+    getCarouselClassName(indx: number){
+        return indx == 0 ? "carousel-item active" : "carousel-item"
+    }
 
-  mounted() {
-    studentService
-      .getStudents()
-      .then(students => (this.students = students))
-      .catch((error: Error) => Alert.danger(error.message));
-  }
+    render() {
+        if (!this.state.jobs) return null;
+        else{
+            return (
+                <div>
+                    <div className="carousel slide" data-ride="carousel">
+                        <div className="carousel-inner text-center">
+                            {this.state.jobs.map((job, indx) => {
+                                return(
+                                    <div key={job.id} className={this.getCarouselClassName(indx)}>
+                                        <div className="d-flex h-100 align-items-center justify-content-center">
+                                            <NavLink to={"/jobs/" + job.id}>
+                                                <p>{job.title}</p><p>{job.dateTime}</p>
+                                            </NavLink>
+                                        </div>
+                                    </div>
+                                )})}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+    }
+
+    componentDidMount() {
+        this.getData();
+    }
+
+    componentWillUnmount() {
+        clearTimeout(this.intervalID);
+    }
+
+    getData = () => {
+        jobService
+            .getNewestJobs()
+            .then(jobs => (this.setState({jobs: jobs})))
+            .catch((error: Error) => Alert.danger(error.message));
+        this.intervalID = setTimeout(this.getData.bind(this), 5000);
+    };
+
 }
 
-class StudentDetails extends Component<{ match: { params: { id: number } } }> {
-  student = null;
+class JobListCategory extends Component<{match: { params: { category: string }}}> {
+    jobs: Job[] = [];
 
-  render() {
-    if (!this.student) return null;
+    render() {
+        if (!this.jobs) return null;
+        else{
+            return (
+                <ul>
+                    {this.jobs.map(job => (
+                        <li key={job.id}>
+                            <Card>
+                                <Row>
+                                    <NavLink activeStyle={{color: 'darkblue'}} exact to={'/jobs/' + job.id}>
+                                        <JobInfo title={job.title} content={job.content} alias={job.alias}
+                                                 dateTime={job.dateTime} imageUrl={job.imageUrl}/>
+                                    </NavLink>
+                                </Row>
+                            </Card>
+                        </li>
+                    ))}
+                </ul>
+            );
+        }
+    }
 
-    return (
-      <Card title="Details">
-        <Row>
-          <Column width={2}>First name</Column>
-          <Column>{this.student.firstName}</Column>
-        </Row>
-        <Row>
-          <Column width={2}>Last name</Column>
-          <Column>{this.student.lastName}</Column>
-        </Row>
-        <Row>
-          <Column width={2}>Email</Column>
-          <Column>{this.student.email}</Column>
-        </Row>
-      </Card>
-    );
-  }
-
-  mounted() {
-    studentService
-      .getStudent(this.props.match.params.id)
-      .then(student => (this.student = student))
-      .catch((error: Error) => Alert.danger(error.message));
-  }
+    mounted() {
+        jobService
+            .getCategory(this.props.match.params.category)
+            .then(jobs => (this.jobs = jobs))
+            .catch((error: Error) => Alert.danger(error.message));
+    }
 }
 
-class StudentEdit extends Component<{ match: { params: { id: number } } }> {
-  student = null;
+class SearchResults extends Component<{match: { params: { keyword: string }}}> {
+    jobs: Job[] = [];
 
-  render() {
-    if (!this.student) return null;
+    render() {
+        if (!this.jobs) return null;
+        else{
+            return (
+                <div>
+                    <h2>Resultater:</h2>
+                    {this.jobs.length == 0 ? <p>Beklager, søket ga ingen resultater..</p> :
+                        <ul>
+                            {this.jobs.map(job => (
+                                <li key={job.id}>
+                                    <Card>
+                                        <Row>
+                                            <NavLink activeStyle={{color: 'darkblue'}} exact to={'/jobs/' + job.id}>
+                                                <JobInfo title={job.title} content={job.content} alias={job.alias}
+                                                         dateTime={job.dateTime} imageUrl={job.imageUrl}/>
+                                            </NavLink>
+                                        </Row>
+                                    </Card>
+                                </li>
+                            ))}
+                        </ul>}
 
-    return (
-      <Card title="Edit">
-        <form>
-          <Row>
-            <Column width={2}>First name</Column>
-            <Column>
-              <input
-                type="text"
-                value={this.student.firstName}
-                onChange={(event: SyntheticInputEvent<HTMLInputElement>) => {
-                  if (this.student) this.student.firstName = event.target.value;
-                }}
-              />
-            </Column>
-          </Row>
-          <Row>
-            <Column width={2}>Last name</Column>
-            <Column>
-              <input
-                type="text"
-                value={this.student.lastName}
-                onChange={(event: SyntheticInputEvent<HTMLInputElement>) => {
-                  if (this.student) this.student.lastName = event.target.value;
-                }}
-              />
-            </Column>
-          </Row>
-          <Row>
-            <Column width={2}>Email</Column>
-            <Column>
-              <input
-                type="text"
-                value={this.student.email}
-                onChange={(event: SyntheticInputEvent<HTMLInputElement>) => {
-                  if (this.student) this.student.email = event.target.value;
-                }}
-              />
-            </Column>
-          </Row>
-          <Button.Danger onClick={this.save}>Save</Button.Danger>
-        </form>
-      </Card>
-    );
-  }
+                </div>
+            );
+        }
+    }
 
-  mounted() {
-    studentService
-      .getStudent(this.props.match.params.id)
-      .then(student => (this.student = student))
-      .catch((error: Error) => Alert.danger(error.message));
-  }
+    mounted() {
+        jobService
+            .searchJobs(this.props.match.params.keyword)
+            .then(jobs => (this.jobs = jobs))
+            .catch((error: Error) => Alert.danger(error.message));
+    }
+}
 
-  save() {
-    if (!this.student) return null;
+class JobList extends Component {
+    jobs: Job[] = [];
 
-    studentService
-      .updateStudent(this.student)
-      .then(() => {
-        let studentList = StudentList.instance();
-        if (studentList) studentList.mounted(); // Update Studentlist-component
-        if (this.student) history.push('/students/' + this.student.id);
-      })
-      .catch((error: Error) => Alert.danger(error.message));
-  }
+    render(){
+        if(this.jobs){
+            return(
+                <ul>
+                    {this.jobs.filter(job => job.importance == 1).map(job => (
+                        <li key={job.id}>
+                            <Card>
+                                <Row>
+                                    <NavLink activeStyle={{ color: 'darkblue' }} exact to={'/jobs/' + job.id}>
+                                        <JobInfo title={job.title} content={job.content} alias={job.alias} dateTime={job.dateTime} imageUrl={job.imageUrl}/>
+                                    </NavLink>
+                                </Row>
+                            </Card>
+                        </li>
+                    ))}
+                </ul>
+            )
+        }
+        else return null;
+    }
+
+    mounted() {
+        jobService
+            .getJobs()
+            .then(jobs => (this.jobs = jobs))
+            .catch((error: Error) => Alert.danger(error.message));
+    }
+}
+
+class JobDetails extends Component<{ match: { params: { id: number } } }> {
+    job = null;
+
+    render() {
+        if (!this.job) return null;
+
+        return (
+            <div>
+                <Card>
+                    <JobInfo title={this.job.title} content={this.job.content} alias={this.job.alias} dateTime={this.job.dateTime} imageUrl={this.job.imageUrl}/>
+                    <NavLink exact to={"/jobs/" + this.job.id + "/edit/" }>rediger</NavLink>
+                </Card>
+                <MessageBoard job_id={this.job.id}/>
+            </div>
+        );
+    }
+
+    mounted() {
+        jobService
+            .getJob(this.props.match.params.id)
+            .then(job => (this.job = job))
+            .catch((error: Error) => Alert.danger(error.message));
+    }
+}
+
+class MessageBoard extends Component<{job_id: number}> {
+    messages: Message[] = [];
+    message: Message = new Message();
+
+    render(){
+        if(!this.messages) return null;
+        return (
+            <div>
+
+                <Card title={"Meldinger"}>
+                    <ul>
+                        {this.messages.map(m =>(<MessageInfo from={m.alias} message={m.content} dateTime={m.dateTime} id={m.id}/>))}
+                    </ul>
+                </Card>
+                <div className="p-5 container w-auto width w-100" id={"newMessageInputs"}>
+                    <Card title={"Ny melding:"}>
+
+                        <Row>
+                            <Column>
+                                <input
+                                    className={"rounded"}
+                                    value={this.message.alias}
+                                    type="text"
+                                    placeholder="alias her:"
+                                    onChange={(event: SyntheticInputEvent<HTMLInputElement>) => (this.message.alias = event.target.value)}/>
+                            </Column>
+                        </Row>
+                        <Row>
+                            <Column>
+                        <textarea
+                            className={"rounded"}
+                            value={this.message.content}
+                            id={"messageContent"} placeholder="melding her:"
+                            onChange={(event: SyntheticInputEvent<HTMLInputElement>) => (this.message.content = event.target.value)}/>
+                            </Column>
+                        </Row>
+                        <Row><Column><Button.Success onClick={this.submit}>Send</Button.Success></Column></Row>
+                    </Card>
+                </div>
+            </div>
+        );
+    }
+
+    mounted() {
+        messageService
+            .getMessages(this.props.job_id)
+            .then(messages => (this.messages = messages))
+            .catch((error: Error) => Alert.danger(error.message));
+        this.message.content = "";
+    }
+
+    submit() {
+        console.log("submitting message");
+        this.message.job_id = this.props.job_id;
+        messageService
+            .postMessage(this.message)
+            .then(() => {
+                let messageBoard = MessageBoard.instance();
+                if (messageBoard) messageBoard.mounted(); // Update Studentlist-component
+                this.message = new Message();
+                history.push('/jobs/' + this.props.job_id);
+            })
+            .catch((error: Error) => Alert.danger(error.message));
+    }
+
+}
+
+
+class JobEdit extends Component<{ match: { params: { id: number } } }> {
+    job = null;
+
+    render() {
+        if (!this.job) return null;
+
+        return (
+            <Card title="Rediger">
+                <form>
+                    <Row>
+                        <Column width={2}>tittel:</Column>
+                        <Column>
+                            <input
+                                type="text"
+                                value={this.job.title}
+                                onChange={(event: SyntheticInputEvent<HTMLInputElement>) => {
+                                    if (this.job) this.job.title = event.target.value;
+                                }}
+                            />
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column width={2}>innhold:</Column>
+                        <Column>
+                            <textarea
+                                type="text"
+                                value={this.job.content}
+                                onChange={(event: SyntheticInputEvent<HTMLInputElement>) => {
+                                    if (this.job) this.job.content = event.target.value;
+                                }}
+                            />
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column width={2}>bildelenke:</Column>
+                        <Column>
+                            <input
+                                type="text"
+                                value={this.job.imageUrl}
+                                onChange={(event: SyntheticInputEvent<HTMLInputElement>) => {
+                                    if (this.job) this.job.imageUrl = event.target.value;
+                                }}
+                            />
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column width={2}>kategori:</Column>
+                        <Column>
+                            <select
+                                value={this.job.category}
+                                onChange={(event) => {
+                                    if (this.job) this.job.category = event.target.value;
+                                }}>
+                                <option value="transport">transport</option>
+                                <option value="handverk">håndverk</option>
+                                <option value="diverse">diverse</option>
+                            </select>
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column width={2}>alias:</Column>
+                        <Column>
+                            <input
+                                type="text"
+                                value={this.job.alias}
+                                onChange={(event: SyntheticInputEvent<HTMLInputElement>) => {
+                                    if (this.job) this.job.alias = event.target.value;
+                                }}
+                            />
+                        </Column>
+                    </Row>
+                    <Row>
+                        <Column width={2}>viktighet:</Column>
+                        <Column>
+                            <select
+                                value={this.job.importance}
+                                onChange={(event) =>{
+                                    if (this.job) this.job.importance = event.target.value;
+                                }}
+                            >
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                            </select>
+                        </Column>
+                    </Row>
+
+                    <Button.Success onClick={this.save}>Lagre</Button.Success>
+                    <Button.Danger onClick={this.delete}>Slett</Button.Danger>
+
+                </form>
+            </Card>
+        );
+    }
+
+    mounted() {
+        jobService
+            .getJob(this.props.match.params.id)
+            .then(job => (this.job = job))
+            .catch((error: Error) => Alert.danger(error.message));
+    }
+
+    save() {
+        if (!this.job) return null;
+        jobService
+            .updateJob(this.job)
+            .then(() => {
+                let joblist = JobList.instance();
+                if (joblist) joblist.mounted(); // Update Studentlist-component
+                if (this.job) history.push('/jobs/' + this.job.id);
+            })
+            .catch((error: Error) => Alert.danger(error.message));
+    }
+
+    delete() {
+        if (!this.job) return null;
+        jobService
+            .deleteJob(this.job)
+            .then(() => {
+                let joblist = JobList.instance();
+                if (joblist) joblist.mounted(); // Update Studentlist-component
+                if (this.job) history.push('/jobs/');
+            })
+            .catch((error: Error) => Alert.danger(error.message));
+    }
+}
+
+class NewJob extends Component {
+    job = new Job;
+
+    render() {
+        this.job.importance = 1;
+        //this.job.category = "transport";
+        if (!this.job) return null;
+        return (
+            <div id={"form"}>
+                <Card title="Rediger">
+                    <form>
+                        <Row>
+                            <Column width={2}>tittel:</Column>
+                            <Column>
+                                <input
+                                    type="text"
+                                    value={this.job.title}
+                                    onChange={(event: SyntheticInputEvent<HTMLInputElement>) => {
+                                        if (this.job) this.job.title = event.target.value;
+                                    }}
+                                />
+                            </Column>
+                        </Row>
+                        <Row>
+                            <Column width={2}>innhold:</Column>
+                            <Column>
+                                <textarea
+                                    type="text"
+                                    value={this.job.content}
+                                    onChange={(event: SyntheticInputEvent<HTMLInputElement>) => {
+                                        if (this.job) this.job.content = event.target.value;
+                                    }}
+                                />
+                            </Column>
+                        </Row>
+                        <Row>
+                            <Column width={2}>bildelenke:</Column>
+                            <Column>
+                                <input
+                                    type="text"
+                                    value={this.job.imageUrl}
+                                    onChange={(event: SyntheticInputEvent<HTMLInputElement>) => {
+                                        if (this.job) this.job.imageUrl = event.target.value;
+                                    }}
+                                />
+                            </Column>
+                        </Row>
+                        <Row>
+                            <Column width={2}>kategori:</Column>
+                            <Column>
+                                <select
+                                    value={this.job.category}
+                                    onChange={(event) => {
+                                        if (this.job) this.job.category = event.target.value;
+                                    }}>
+                                    <option value="transport">transport</option>
+                                    <option value="handverk">håndverk</option>
+                                    <option value="diverse">diverse</option>
+                                </select>
+                            </Column>
+                        </Row>
+                        <Row>
+                            <Column width={2}>alias:</Column>
+                            <Column>
+                                <input
+                                    type="text"
+                                    value={this.job.alias}
+                                    onChange={(event: SyntheticInputEvent<HTMLInputElement>) => {
+                                        if (this.job) this.job.alias = event.target.value;
+                                    }}
+                                />
+                            </Column>
+                        </Row>
+                        <Row>
+                            <Column width={2}>viktighet:</Column>
+                            <Column>
+                                <select
+                                    onChange={(event) =>{
+                                        if (this.job) this.job.importance = event.target.value;
+                                    }}
+                                >
+                                    <option value="1">1</option>
+                                    <option value="2">2</option>
+                                </select>
+                            </Column>
+                        </Row>
+
+                        <Button.Danger onClick={this.save}>Save</Button.Danger>
+                    </form>
+                </Card>
+            </div>
+        );
+    }
+
+    save() {
+        if (!this.job.title) return null;
+        console.log(this.job.alias);
+        jobService
+            .postJob(this.job)
+            .then(() => {
+                let jobList = JobList.instance();
+                if (jobList) jobList.mounted(); // Update Studentlist-component
+                if (this.job) history.push('/jobs/');
+            })
+            .catch((error: Error) => Alert.danger(error.message));
+    }
 }
 
 const root = document.getElementById('root');
 if (root)
-  ReactDOM.render(
-    <HashRouter>
-      <div>
-        <Alert />
-        <Menu />
-        <Route exact path="/" component={Home} />
-        <Route path="/students" component={StudentList} />
-        <Route exact path="/students/:id" component={StudentDetails} />
-        <Route exact path="/students/:id/edit" component={StudentEdit} />
-      </div>
-    </HashRouter>,
-    root
-  );
+    ReactDOM.render(
+        <HashRouter>
+            <div>
+                <Alert />
+                <Menu />
+                <Route exact path="/" component={Home} />
+                <Route exact path="/jobs/" component={JobList} />
+                <Route exact path="/jobs/:id" component={JobDetails} />
+                <Route exact path="/jobs/:id/edit" component={JobEdit} />
+                <Route exact path="/newjob/" component={NewJob} />
+                <Route exact path="/category/:category" component={JobListCategory} />
+                <Route exact path="/search/:keyword" component={SearchResults} />
+            </div>
+        </HashRouter>,
+        root
+    );
