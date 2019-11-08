@@ -4,6 +4,7 @@
 import * as React from 'react';
 import { Component } from 'react-simplified';
 import { NavLink } from 'react-router-dom';
+import {Job} from "./services";
 
 /**
  * Renders alert messages using Bootstrap classes.
@@ -94,7 +95,15 @@ export class NavBar extends Component<{ brand?: React.Node, children?: React.Nod
     }
 }
 
-export class NavSearch extends Component{
+
+type Props = {
+    //Nødvendig for å unngå flow feil..
+};
+type State = {
+    keyword: string,
+};
+
+export class NavSearch extends Component<Props,State>{
     state = {
         keyword: ""
     };

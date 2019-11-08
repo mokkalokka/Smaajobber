@@ -21,6 +21,11 @@ import {Job, jobService, Message, messageService} from './services';
 import { createHashHistory } from 'history';
 const history = createHashHistory(); // Use history.push(...) to programmatically change path, for instance after successfully saving a student
 
+function formatTime(dateTime : string) {
+    return dateTime.split(":")[0] + ":" + dateTime.split(":")[1];
+}
+
+
 class Menu extends Component {
     render() {
         return (
@@ -55,10 +60,22 @@ class Home extends Component {
     }
 }
 
-class LiveFeed extends Component {
+type Props = {
+    //Nødvendig for å unngå flow feil..
+};
+type State = {
+    jobs: Array<Job>,
+
+};
+
+
+
+class LiveFeed extends Component<Props,State> {
     intervalID = 1;
+    timeoutID: TimeoutID = null;
+
     state = {
-        jobs: new Array<Job>
+        jobs: [],
     };
 
     getCarouselClassName(indx: number){
@@ -77,7 +94,7 @@ class LiveFeed extends Component {
                                     <div key={job.id} className={this.getCarouselClassName(indx)}>
                                         <div className="d-flex h-100 align-items-center justify-content-center">
                                             <NavLink to={"/jobs/" + job.id}>
-                                                <p>{job.title}</p><p>{job.dateTime}</p>
+                                                <p>{job.title}</p><p>{formatTime(job.dateTime)}</p>
                                             </NavLink>
                                         </div>
                                     </div>
@@ -94,7 +111,8 @@ class LiveFeed extends Component {
     }
 
     componentWillUnmount() {
-        clearTimeout(this.intervalID);
+        //clearInterval(this.intervalID);
+        clearTimeout(this.timeoutID)
     }
 
     getData = () => {
@@ -102,7 +120,7 @@ class LiveFeed extends Component {
             .getNewestJobs()
             .then(jobs => (this.setState({jobs: jobs})))
             .catch((error: Error) => Alert.danger(error.message));
-        this.intervalID = setTimeout(this.getData.bind(this), 5000);
+        this.timeoutID = setTimeout(this.getData.bind(this), 5000);
     };
 
 }
@@ -211,7 +229,8 @@ class JobList extends Component {
 }
 
 class JobDetails extends Component<{ match: { params: { id: number } } }> {
-    job = null;
+
+    job: Job = null;
 
     render() {
         if (!this.job) return null;
@@ -219,7 +238,7 @@ class JobDetails extends Component<{ match: { params: { id: number } } }> {
         return (
             <div>
                 <Card>
-                    <JobInfo title={this.job.title} content={this.job.content} alias={this.job.alias} dateTime={this.job.dateTime} imageUrl={this.job.imageUrl}/>
+                    <JobInfo title={this.job.title} content={this.job.content} alias={this.job.alias} dateTime={formatTime(this.job.dateTime)} imageUrl={this.job.imageUrl}/>
                     <NavLink exact to={"/jobs/" + this.job.id + "/edit/" }>rediger</NavLink>
                 </Card>
                 <MessageBoard job_id={this.job.id}/>

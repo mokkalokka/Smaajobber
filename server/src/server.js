@@ -18,7 +18,7 @@ class Job {
     id: number;
     title: string;
     content: string;
-    dateTime: Date;
+    dateTime: string;
     imageUrl: string;
     category: string;
     alias: string;
