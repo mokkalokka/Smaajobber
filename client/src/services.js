@@ -18,7 +18,6 @@ export class Job{
     }
     else return 0;
   }
-
 }
 
 export class Message {

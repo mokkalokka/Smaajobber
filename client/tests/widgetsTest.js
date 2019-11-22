@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Component } from 'react-simplified';
 import { Alert } from '../src/widgets.js';
 import { shallow, mount } from 'enzyme';
+import {NavSearch} from "../src/widgets";
 
 describe('Alert tests', () => {
   const wrapper = shallow(<Alert />);
@@ -41,3 +42,4 @@ describe('Alert tests', () => {
     expect(wrapper.find('button.close')).toHaveLength(0);
   });
 });
+

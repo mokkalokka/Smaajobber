@@ -2,62 +2,6 @@ body {
   padding: 0 7vw;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
-/*.checked {
-  color: orange;
-}
-
-.stars:hover{
-  color: black !important;
-}
-
-#star1:hover{
-  color:orange ;
-}
-
-#star2:hover{
-  color:orange !important;
-
-}
-#star3:hover{
-  color:orange !important;
-}
-#star4:hover{
-  color:orange !important;
-}
-#star5:hover{
-  color:orange !important;
-}*/
-
-/*a{
-  text-decoration: none !important;
-  color: black !important;
-}
-
-a:hover {
-  border: solid 2px darkgrey;
-  margin: -2px;
-}
-
-a:focus {
-  border: solid 2px darkgrey;
-  margin: -2px;
-}
-
-a#GitHub:hover {
-  border: none;
-  margin: 0;
-}
-a#GitHub:focus {
-  border: none;
-  margin: 0;
-}
-
-.active-page{
-  border-bottom:grey solid 0.1em ;
-  margin-bottom: -2px;
-}
-
-*/
 
 #avatar{
   border-radius: 50%;
@@ -89,11 +33,11 @@ ul {
   max-width: 30em;
 }
 
-#form input{
+form input{
   width: 20em;
 }
 
-#form textarea{
+form textarea{
   width: 20em;
 }
 

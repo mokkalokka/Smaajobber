@@ -201,6 +201,34 @@ export class CarouselItem extends Component<{title: string, dateTime: string, id
     }
 }
 
+export class Pages extends Component<{jobs: Array<Job>, onClick: (number) => mixed}> {
+    currentPage: number = 1;
+
+
+    nextPage(){
+        if(this.props.jobs.length / 4 > this.currentPage) this.currentPage ++;
+        this.props.onClick(this.currentPage);
+    }
+
+    prevPage(){
+        if(this.currentPage > 1) this.currentPage --;
+        this.props.onClick(this.currentPage);
+    }
+
+    render() {
+       return(
+           this.currentPage == 1 ?
+               (this.props.jobs.length > 1 ? <Button.Success onClick={this.nextPage}>Neste side</Button.Success> : <p></p>) :
+               (this.props.jobs.length / 4 > this.currentPage ?
+                   <div>
+                       <Button.Success onClick={this.prevPage}>Forrige side</Button.Success>
+                       <Button.Success onClick={this.nextPage}>Neste side</Button.Success>
+                   </div> : <Button.Success onClick={this.prevPage}>Forrige side</Button.Success> )
+
+       );
+    }
+}
+
 
 /**
  * Renders an information card using Bootstrap classes
