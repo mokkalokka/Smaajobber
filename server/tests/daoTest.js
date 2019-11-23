@@ -1,7 +1,7 @@
 let mysql = require("mysql");
 
-const JobDao = require("./jobDao.js");
-const MessageDao = require("./messageDao.js");
+const JobDao = require("../src/jobDao.js");
+const MessageDao = require("../src/messageDao.js");
 const runSqlFile = require("./runSqlFile.js");
 
 // GitLab CI Pool
