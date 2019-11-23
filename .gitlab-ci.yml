@@ -1,7 +1,7 @@
 variables:
-  MYSQL_DATABASE: 'michaesl_public'
-  MYSQL_USER: 'michaesl_public'
-  MYSQL_ROOT_PASSWORD: '0987654321' #burde lagres ett annet sted
+  MYSQL_DATABASE: 'supertestdb'
+  MYSQL_USER: 'root'
+  MYSQL_ROOT_PASSWORD: 'secret'
   MYSQL_ALLOW_EMPTY_PASSWORD: 1
 
 test:
@@ -12,3 +12,4 @@ test:
     - npm install -g flow-bin
     - cd server && npm install && npm test && flow check src
     - cd ../client && npm install && npm test && flow check src
+

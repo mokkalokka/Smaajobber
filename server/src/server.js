@@ -14,164 +14,94 @@ let pool = mysql.createPool({
     dateStrings: true
 });
 
-class Job {
-    id: number;
-    title: string;
-    content: string;
-    dateTime: string;
-    imageUrl: string;
-    category: string;
-    alias: string;
-    importance: number;
-}
-
-class Message {
-    id: number;
-    job_id: number;
-    alias: string;
-    content: string;
-    dateTime: string;
-}
-
 const public_path = path.join(__dirname, '/../../client/public');
+const JobDao = require("./jobDao.js");
+const MessageDao = require("./messageDao.js");
+let jobDao = new JobDao(pool);
+let messageDao = new MessageDao(pool);
 
 let app = express();
-
-
 
 app.use(express.static(public_path));
 app.use(express.json()); // For parsing application/json
 
 
 
+//----------- JOB -----------//
+
 app.get('/jobs', (req: express$Request, res: express$Response) => {
-    pool.query('select * from job', (error, results) => {
-        if (error) {
-            console.error(error);
-            return res.status(500);
-        }
-        res.send(results);
+    jobDao.getJobs((status, data) => {
+        res.status(status);
+        res.json(data);
     });
 });
 
 app.get('/category/:category', (req: express$Request, res: express$Response) => {
-    pool.query('select * from job where category=?',[req.params.category], (error, results) => {
-        if (error) {
-            console.error(error);
-            return res.status(500);
-        }
-        res.send(results);
+    jobDao.getCategory(req.params.category, (status, data) => {
+        res.status(status);
+        res.json(data);
     });
 });
 
 app.get('/search/:keyword', (req: express$Request, res: express$Response) => {
-    pool.query('select * from job where title like ? or content like ? or alias like ?',[("%" + req.params.keyword + "%"), ("%" + req.params.keyword + "%"), ("%" + req.params.keyword + "%")], (error, results) => {
-        if (error) {
-            console.error(error);
-            return res.status(500);
-        }
-        res.send(results);
+    jobDao.getSearchResults(req.params.keyword, (status, data) => {
+        res.status(status);
+        res.json(data);
     });
 });
 
-
 app.get('/livefeed/:number', (req: express$Request, res: express$Response) => {
-    pool.query('select * from job order by dateTime desc limit 3',[req.params.category], (error, results) => {
-        if (error) {
-            console.error(error);
-            return res.status(500);
-        }
-        res.send(results);
+    jobDao.getLiveFeed((status, data) => {
+        res.status(status);
+        res.json(data);
     });
+
 });
 
 app.get('/jobs/:id', (req: express$Request, res: express$Response) => {
-    pool.query('select * from job where id=?', [req.params.id], (error, results: Job[]) => {
-        if (error) {
-            console.error(error);
-            return res.status(500);
-        }
-        if (results.length == 0) return res.sendStatus(404); // No row found
-
-        res.send(results[0]);
+    jobDao.getJob(req.params.id, (status, data) => {
+        console.log(data);
+        res.status(status);
+        res.json(data[0]);
     });
 });
 
-app.get('/messages/:id', (req: express$Request, res: express$Response) => {
-    pool.query('select * from message where job_id=?', [req.params.id], (error, results: Message[]) => {
-        if (error) {
-            console.error(error);
-            return res.status(500);
-        }
-        //if (results.length == 0) return res.sendStatus(404); // No row found
-
-        res.send(results);
+app.put('/jobs', (req: { body: Object }, res: express$Response) => {
+    jobDao.updateJob(req.body,(status, data) => {
+        res.status(status);
+        res.json(data);
     });
 });
 
-
-app.put('/jobs', (req: { body: Job }, res: express$Response) => {
-    pool.query(
-        'update job set title=?, content=?, imageUrl=?, category=?, alias=?, importance=? where id=?',
-        [req.body.title, req.body.content, req.body.imageUrl, req.body.category, req.body.alias,req.body.importance, req.body.id],
-        (error, results) => {
-            if (error) {
-                console.error(error);
-                return res.status(500);
-            }
-
-            if (results.affectedRows == 0) return res.sendStatus(404); // No row updated
-            res.sendStatus(200);
-        }
-    );
-});
-
-app.post('/jobs', (req: { body: Job }, res: express$Response) => {
-    pool.query(
-        'insert into job(title, content, imageUrl, category, alias, importance, dateTime) ' +
-        'values (?, ?, ?, ?, ?, ?, ?)',
-        [req.body.title, req.body.content, req.body.imageUrl, req.body.category, req.body.alias, req.body.importance, new Date()],
-        (error, results) => {
-            if (error) {
-                console.error(error);
-                return res.status(500);
-            }
-            if (results.affectedRows == 0) return res.sendStatus(404); // No row updated
-            res.sendStatus(200);
-        }
-    );
-});
-
-app.post('/jobs/:id/messages', (req: { body: Message }, res: express$Response) => {
-    pool.query(
-        'insert into message(job_id, alias, content, dateTime) ' +
-        'values (?, ?, ?, NOW())',
-        [req.body.job_id, req.body.alias, req.body.content],
-        (error, results) => {
-            if (error) {
-                console.error(error);
-                return res.status(500);
-            }
-            if (results.affectedRows == 0) return res.sendStatus(404); // No row updated
-            res.sendStatus(200);
-        }
-    );
+app.post('/jobs', (req: { body: Object }, res: express$Response) => {
+    jobDao.postJob(req.body,(status, data) => {
+        res.status(status);
+        res.json(data);
+    });
 });
 
 app.delete('/jobs/:id', (req: express$Request, res: express$Response) => {
-    console.log(req.params.id);
-    pool.query(
-        'DELETE FROM job WHERE id=?',
-        [req.params.id],
-        (error, results) => {
-            if (error) {
-                console.error(error);
-                return res.status(500);
-            }
-            if (results.affectedRows == 0) return res.sendStatus(404); // No row updated
-            res.sendStatus(200);
-        }
-    );
+    jobDao.deleteJob(req.params.id,(status, data) => {
+        res.status(status);
+        res.json(data);
+    });
+});
+
+
+//----------- MESSAGE -----------//
+
+app.get('/messages/:id', (req: express$Request, res: express$Response) => {
+    messageDao.getMessages(req.params.id,(status, data) => {
+        res.status(status);
+        res.json(data);
+    });
+});
+
+app.post('/jobs/:id/messages', (req: { body: Object }, res: express$Response) => {
+    messageDao.postMessage(req.body,(status, data) => {
+        res.status(status);
+        res.json(data);
+    });
 });
 
 // The listen promise can be used to wait for the web server to start (for instance in your tests)

@@ -1,7 +1,18 @@
-import {Job} from "../../client/src/services";
+//import {Job} from "../../client/src/services";
 const Dao = require("./dao.js");
 
-module.exports = class PersonDao extends Dao {
+class Job {
+    id: number;
+    title: string;
+    content: string;
+    dateTime: string;
+    imageUrl: string;
+    category: string;
+    alias: string;
+    importance: number;
+}
+
+module.exports = class JobDao extends Dao {
     getJobs(callback) {
         super.query("select * from job", [], callback);
     }
@@ -11,11 +22,11 @@ module.exports = class PersonDao extends Dao {
     }
 
     getSearchResults(keyword: String, callback){
-        super.query('select * from job where title like ? or content like ? or alias like ?', [keyword], callback);
+        super.query('select * from job where title like ? or content like ? or alias like ?', [keyword, keyword, keyword], callback);
     }
 
     getLiveFeed(callback) {
-        super.query('select * from job order by dateTime desc limit 3', callback);
+        super.query('select * from job order by dateTime desc limit 3',[], callback);
     }
 
     getJob(id: Number, callback){
@@ -36,5 +47,4 @@ module.exports = class PersonDao extends Dao {
     deleteJob(id: Number, callback){
         super.query('DELETE FROM job WHERE id=?', [id], callback);
     }
-
 };
