@@ -71,7 +71,7 @@ test("post message", done => {
         console.log(
             "Test callback: status=" + status + ", data=" + JSON.stringify(data)
         );
-        expect(data.length).toBe(0);
+        expect(data.affectedRows).toBeGreaterThanOrEqual(1);
         done();
     }
 
