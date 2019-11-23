@@ -1,4 +1,3 @@
-//import {Job} from "../../client/src/services";
 const Dao = require("./dao.js");
 
 class Job {
