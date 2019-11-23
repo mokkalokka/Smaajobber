@@ -1,8 +1,3 @@
-image: node:8
-
-# Set up MySQL test-database
-services:
-  - mysql:5.5
 
 variables:
   MYSQL_DATABASE: supertestdb
@@ -11,9 +6,9 @@ variables:
   #MYSQL_ALLOW_EMPTY_PASSWORD: 1
 
 test:
-  image: node:latest
+  image: node:8
   services:
-    - mysql:5 # The JS mysql-library does not yet support the newest mysql protocol
+    - mysql:5.5 # The JS mysql-library does not yet support the newest mysql protocol
   script:
     - npm install -g flow-bin
     - cd server && npm install && npm test && flow check src
