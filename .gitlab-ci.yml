@@ -14,25 +14,11 @@ before_script:
   - npm install
 
 # Run JEST tests
-run_tests:
-  stage: test
   script:
-    - npm test
-  artifacts:
-    paths:
-      - coverage/
+    - npm install -g flow-bin
+    - cd server && npm install && npm test && flow check src
+    - cd ../client && npm install && npm test && flow check src
 
-# Publish coverage report on gitlab-pages
-pages:
-  stage: deploy
-  dependencies:
-    - run_tests
-  script:
-    - mkdir .public
-    - cp -r coverage/* .public
-    - mv .public public
-  artifacts:
-    paths:
-      - public
-  only:
-    - master
+
+
+
