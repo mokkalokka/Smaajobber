@@ -9,12 +9,8 @@ variables:
   MYSQL_DATABASE: supertestdb
   MYSQL_ROOT_PASSWORD: secret
 
-# Install node libraries
-before_script:
-  - npm install
-
 # Run JEST tests
-  script:
+script:
     - npm install -g flow-bin
     - cd server && npm install && npm test && flow check src
     - cd ../client && npm install && npm test && flow check src
