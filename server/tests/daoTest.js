@@ -27,12 +27,10 @@ class Message {
     dateTime: string;
 
 
-    constructor(id: number, job_id: number, alias: string, content: string, dateTime: string) {
-        this.id = id;
+    constructor(job_id: number, alias: string, content: string) {
         this.job_id = job_id;
         this.alias = alias;
         this.content = content;
-        this.dateTime = dateTime;
     }
 }
 
@@ -77,7 +75,7 @@ test("post message", done => {
         done();
     }
 
-    let message = new Message(0,0,"Test","test","");
+    let message = new Message(0,"Test","test");
 
     messageDao.postMessage(message, callback);
 });
@@ -161,7 +159,7 @@ test("update job", done => {
         done();
     }
 
-    let job = new Job(1,'Trenger noen til å måke snø på taket!',
+    let job = new Job(0,'Trenger noen til å måke snø på taket!',
         'Endret',
         'https://vkmagasinet.no/wp-content/uploads/2015/12/h%C3%A5ndm%C3%A5king-bilde.jpg',
         'diverse',
