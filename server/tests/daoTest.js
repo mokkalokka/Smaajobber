@@ -118,7 +118,7 @@ test("get one job from db", done => {
             "Test callback: status=" + status + ", data=" + JSON.stringify(data)
         );
         expect(data.length).toBe(1);
-        expect(data[0].alias).toBe("Anders");
+        expect(data[0].alias).toBe("Gunnar");
         done();
     }
 

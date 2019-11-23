@@ -20,7 +20,4 @@ job_id int NOT NULL,
 alias VARCHAR(64) NOT NULL,
 content VARCHAR(64) NOT NULL,
 dateTime DATETIME NOT NULL,
-FOREIGN KEY (job_id)
-        REFERENCES job(id)
-        ON DELETE CASCADE)
 ENGINE=InnoDB DEFAULT CHARSET=latin1;
