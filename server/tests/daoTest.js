@@ -4,6 +4,7 @@ const JobDao = require("../src/jobDao.js");
 const MessageDao = require("../src/messageDao.js");
 const runSqlFile = require("./runSqlFile.js");
 
+
 // GitLab CI Pool
 let pool = mysql.createPool({
     connectionLimit: 1,
@@ -20,8 +21,8 @@ let messageDao = new MessageDao(pool);
 
 
 beforeAll(done => {
-    runSqlFile("./create_tables.sql", pool, () => {
-        runSqlFile("./create_testData.sql", pool, done);
+    runSqlFile("../tests/create_tables.sql", pool, () => {
+        runSqlFile("../tests/create_testData.sql", pool, done);
     });
 });
 
@@ -41,8 +42,8 @@ test("get one job from db", done => {
 
     jobDao.getJob(1, callback);
 });
-/*
-test("get unknown person from db", done => {
+
+test("get jobs", done => {
     function callback(status, data) {
         console.log(
             "Test callback: status=" + status + ", data=" + JSON.stringify(data)
@@ -51,10 +52,10 @@ test("get unknown person from db", done => {
         done();
     }
 
-    personDao.getOne(0, callback);
+    jobDao.getJobs( callback);
 });
 
-test("add person to db", done => {
+test("add job", done => {
     function callback(status, data) {
         console.log(
             "Test callback: status=" + status + ", data=" + JSON.stringify(data)
@@ -63,7 +64,7 @@ test("add person to db", done => {
         done();
     }
 
-    personDao.createOne(
+    jobDao.postJob(
         { navn: "Nils Nilsen", alder: 34, adresse: "Gata 3" },
         callback
     );
@@ -78,5 +79,5 @@ test("get all persons from db", done => {
         done();
     }
 
-    personDao.getAll(callback);
-});*/
+    jobDao.getAll(callback);
+});
