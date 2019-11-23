@@ -104,6 +104,9 @@ app.post('/jobs/:id/messages', (req: { body: Object }, res: express$Response) =>
     });
 });
 
+
+
+/*
 // The listen promise can be used to wait for the web server to start (for instance in your tests)
 export let listen = new Promise<void>((resolve, reject) => {
     // Setup hot reload (refresh web page on client changes)
@@ -118,3 +121,4 @@ export let listen = new Promise<void>((resolve, reject) => {
         });
     });
 });
+*/

@@ -61,7 +61,7 @@ test("get one job from db", done => {
     jobDao.getJob(1, callback);
 });
 
-test("get jobs", done => {
+/*test("get jobs", done => {
     function callback(status, data) {
         console.log(
             "Test callback: status=" + status + ", data=" + JSON.stringify(data)
@@ -93,6 +93,38 @@ test("add job", done => {
     jobDao.postJob(job, callback);
 });
 
+test("update job", done => {
+    function callback(status, data) {
+        console.log(
+            "Test callback: status=" + status + ", data=" + JSON.stringify(data)
+        );
+        expect(data.affectedRows).toBeGreaterThanOrEqual(1);
+        done();
+    }
+
+    let job = new Job('Trenger noen til å måke snø på taket!',
+        'Endret',
+        'https://vkmagasinet.no/wp-content/uploads/2015/12/h%C3%A5ndm%C3%A5king-bilde.jpg',
+        'diverse',
+        'Gunnar',
+        '2019-30-2 08:16',
+        2);
+
+    jobDao.postJob(job, callback);
+});
+
+test("delete job", done => {
+    function callback(status, data) {
+        console.log(
+            "Test callback: status=" + status + ", data.length=" + data.length
+        );
+        expect(data.affectedRows).toBeGreaterThanOrEqual(1);
+        done();
+    }
+
+    jobDao.deleteJob(1,callback);
+});
+
 test("get all jobs from db", done => {
     function callback(status, data) {
         console.log(
@@ -103,4 +135,6 @@ test("get all jobs from db", done => {
     }
 
     jobDao.getAll(callback);
-});
+});*/
+
+
