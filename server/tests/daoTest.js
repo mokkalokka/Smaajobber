@@ -26,7 +26,6 @@ class Message {
     content: string;
     dateTime: string;
 
-
     constructor(job_id: number, alias: string, content: string) {
         this.job_id = job_id;
         this.alias = alias;
@@ -44,7 +43,7 @@ class Job {
     alias: string;
     importance: number;
 
-    constructor(id: number, title: string, content: string, dateTime: string, imageUrl: string, category: string, alias: string, importance: number) {
+    constructor(id: number, title: string, content: string, imageUrl:string,  category: string, alias: string, dateTime: string, importance: number) {
         this.id = id;
         this.title = title;
         this.content = content;
@@ -92,6 +91,26 @@ test("get messages from job 1", done => {
     messageDao.getMessages(0, callback);
 });
 
+test("update job", done => {
+    function callback(status, data) {
+        console.log(
+            "Test callback: status=" + status + ", data=" + JSON.stringify(data)
+        );
+        expect(data.affectedRows).toBeGreaterThanOrEqual(0);
+        done();
+    }
+
+    let job = new Job(1,'Trenger noen til å måke snø på taket!',
+        'Endret',
+        'https://vkmagasinet.no/wp-content/uploads/2015/12/h%C3%A5ndm%C3%A5king-bilde.jpg',
+        'diverse',
+        'Gunnar',
+        '2019-30-2 08:16',
+        2);
+
+    jobDao.updateJob(job, callback);
+});
+
 
 test("get one job from db", done => {
     function callback(status, data) {
@@ -130,7 +149,7 @@ test("delete job", done => {
     jobDao.deleteJob(1,callback);
 });
 
-test("add job", done => {
+test("post job", done => {
     function callback(status, data) {
         console.log(
             "Test callback: status=" + status + ", data=" + JSON.stringify(data)
@@ -139,7 +158,9 @@ test("add job", done => {
         done();
     }
 
-    let job = new Job(1,'Trenger noen til å måke snø på taket!',
+    let job = new Job(
+        1,
+        'Trenger noen til å måke snø på taket!',
         'Betaling etter avtale',
         'https://vkmagasinet.no/wp-content/uploads/2015/12/h%C3%A5ndm%C3%A5king-bilde.jpg',
         'diverse',
@@ -150,25 +171,7 @@ test("add job", done => {
     jobDao.postJob(job, callback);
 });
 
-test("update job", done => {
-    function callback(status, data) {
-        console.log(
-            "Test callback: status=" + status + ", data=" + JSON.stringify(data)
-        );
-        expect(data.affectedRows).toBeGreaterThanOrEqual(1);
-        done();
-    }
 
-    let job = new Job(0,'Trenger noen til å måke snø på taket!',
-        'Endret',
-        'https://vkmagasinet.no/wp-content/uploads/2015/12/h%C3%A5ndm%C3%A5king-bilde.jpg',
-        'diverse',
-        'Gunnar',
-        '2019-30-2 08:16',
-        2);
-
-    jobDao.updateJob(job, callback);
-});
 
 
 
