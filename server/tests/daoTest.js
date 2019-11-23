@@ -48,7 +48,22 @@ afterAll(() => {
     pool.end();
 });
 
-test("get one job from db", done => {
+test("testing connection", done => {
+    function callback(status, data) {
+        console.log(
+            "Test callback: status=" + status + ", data=" + JSON.stringify(data)
+        );
+        expect(data.length).toBe(1);
+        expect(data[0].alias).toBe("Anders");
+        done();
+    }
+
+    jobDao.testConnection(callback);
+});
+
+
+
+/*test("get one job from db", done => {
     function callback(status, data) {
         console.log(
             "Test callback: status=" + status + ", data=" + JSON.stringify(data)
@@ -59,7 +74,7 @@ test("get one job from db", done => {
     }
 
     jobDao.getJob(1, callback);
-});
+});*/
 
 /*test("get jobs", done => {
     function callback(status, data) {

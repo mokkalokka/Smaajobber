@@ -13,6 +13,10 @@ class Job {
 }
 
 module.exports = class JobDao extends Dao {
+    testConnection(callback) {
+        super.query("Show tables", [], callback);
+    }
+
     getJobs(callback) {
         super.query("select * from job", [], callback);
     }
