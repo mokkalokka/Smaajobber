@@ -25,6 +25,15 @@ class Message {
     alias: string;
     content: string;
     dateTime: string;
+
+
+    constructor(id: number, job_id: number, alias: string, content: string, dateTime: string) {
+        this.id = id;
+        this.job_id = job_id;
+        this.alias = alias;
+        this.content = content;
+        this.dateTime = dateTime;
+    }
 }
 
 class Job {
@@ -36,6 +45,17 @@ class Job {
     category: string;
     alias: string;
     importance: number;
+
+    constructor(id: number, title: string, content: string, dateTime: string, imageUrl: string, category: string, alias: string, importance: number) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.dateTime = dateTime;
+        this.imageUrl = imageUrl;
+        this.category = category;
+        this.alias = alias;
+        this.importance = importance;
+    }
 }
 
 beforeAll(done => {
@@ -47,6 +67,33 @@ beforeAll(done => {
 afterAll(() => {
     pool.end();
 });
+
+test("post message", done => {
+    function callback(status, data) {
+        console.log(
+            "Test callback: status=" + status + ", data=" + JSON.stringify(data)
+        );
+        expect(data.length).toBe(0);
+        done();
+    }
+
+    let message = new Message(0,0,"Test","test","");
+
+    messageDao.postMessage(message, callback);
+});
+
+test("get messages from job 1", done => {
+    function callback(status, data) {
+        console.log(
+            "Test callback: status=" + status + ", data=" + JSON.stringify(data)
+        );
+        expect(data.length).toBe(1);
+        done();
+    }
+
+    messageDao.getMessages(0, callback);
+});
+
 
 test("get one job from db", done => {
     function callback(status, data) {
@@ -85,8 +132,6 @@ test("delete job", done => {
     jobDao.deleteJob(1,callback);
 });
 
-/*
-
 test("add job", done => {
     function callback(status, data) {
         console.log(
@@ -96,7 +141,7 @@ test("add job", done => {
         done();
     }
 
-    let job = new Job('Trenger noen til å måke snø på taket!',
+    let job = new Job(1,'Trenger noen til å måke snø på taket!',
         'Betaling etter avtale',
         'https://vkmagasinet.no/wp-content/uploads/2015/12/h%C3%A5ndm%C3%A5king-bilde.jpg',
         'diverse',
@@ -116,7 +161,7 @@ test("update job", done => {
         done();
     }
 
-    let job = new Job('Trenger noen til å måke snø på taket!',
+    let job = new Job(1,'Trenger noen til å måke snø på taket!',
         'Endret',
         'https://vkmagasinet.no/wp-content/uploads/2015/12/h%C3%A5ndm%C3%A5king-bilde.jpg',
         'diverse',
@@ -124,12 +169,10 @@ test("update job", done => {
         '2019-30-2 08:16',
         2);
 
-    jobDao.postJob(job, callback);
+    jobDao.updateJob(job, callback);
 });
 
 
-
-*/
 
 
 

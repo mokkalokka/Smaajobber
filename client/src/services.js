@@ -26,7 +26,9 @@ export class Message {
   alias: string;
   content: string;
   dateTime: string;
+
 }
+
 
 class JobService {
   getJobs() {
