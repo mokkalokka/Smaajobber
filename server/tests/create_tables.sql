@@ -24,6 +24,3 @@ FOREIGN KEY (job_id)
         REFERENCES job(id)
         ON DELETE CASCADE)
 ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-
-

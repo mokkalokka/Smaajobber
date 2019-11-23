@@ -39,8 +39,8 @@ class Job {
 }
 
 beforeAll(done => {
-    runSqlFile("../tests/create_tables.sql", pool, () => {
-        runSqlFile("../tests/create_testData.sql", pool, done);
+    runSqlFile("server/tests/create_tables.sql", pool, () => {
+        runSqlFile("server/tests/create_testData.sql", pool, done);
     });
 });
 
@@ -61,7 +61,7 @@ test("get one job from db", done => {
     jobDao.getJob(1, callback);
 });
 
-test("get jobs", done => {
+/*test("get jobs", done => {
     function callback(status, data) {
         console.log(
             "Test callback: status=" + status + ", data=" + JSON.stringify(data)
@@ -103,4 +103,4 @@ test("get all persons from db", done => {
     }
 
     jobDao.getAll(callback);
-});
+});*/
