@@ -61,7 +61,7 @@ test("get one job from db", done => {
     jobDao.getJob(1, callback);
 });
 
-/*test("get jobs", done => {
+test("get jobs", done => {
     function callback(status, data) {
         console.log(
             "Test callback: status=" + status + ", data=" + JSON.stringify(data)
@@ -72,6 +72,20 @@ test("get one job from db", done => {
 
     jobDao.getJobs(callback);
 });
+
+test("delete job", done => {
+    function callback(status, data) {
+        console.log(
+            "Test callback: status=" + status + ", data.length=" + data.length
+        );
+        expect(data.affectedRows).toBeGreaterThanOrEqual(1);
+        done();
+    }
+
+    jobDao.deleteJob(1,callback);
+});
+
+/*
 
 test("add job", done => {
     function callback(status, data) {
@@ -113,28 +127,9 @@ test("update job", done => {
     jobDao.postJob(job, callback);
 });
 
-test("delete job", done => {
-    function callback(status, data) {
-        console.log(
-            "Test callback: status=" + status + ", data.length=" + data.length
-        );
-        expect(data.affectedRows).toBeGreaterThanOrEqual(1);
-        done();
-    }
 
-    jobDao.deleteJob(1,callback);
-});
 
-test("get all jobs from db", done => {
-    function callback(status, data) {
-        console.log(
-            "Test callback: status=" + status + ", data.length=" + data.length
-        );
-        expect(data.length).toBeGreaterThanOrEqual(3);
-        done();
-    }
+*/
 
-    jobDao.getAll(callback);
-});*/
 
 
