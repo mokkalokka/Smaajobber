@@ -19,6 +19,24 @@ let pool = mysql.createPool({
 let jobDao = new JobDao(pool);
 let messageDao = new MessageDao(pool);
 
+class Message {
+    id: number;
+    job_id: number;
+    alias: string;
+    content: string;
+    dateTime: string;
+}
+
+class Job {
+    id: number;
+    title: string;
+    content: string;
+    dateTime: string;
+    imageUrl: string;
+    category: string;
+    alias: string;
+    importance: number;
+}
 
 beforeAll(done => {
     runSqlFile("../tests/create_tables.sql", pool, () => {
@@ -48,11 +66,11 @@ test("get jobs", done => {
         console.log(
             "Test callback: status=" + status + ", data=" + JSON.stringify(data)
         );
-        expect(data.length).toBe(0);
+        expect(data.length).toBe(2);
         done();
     }
 
-    jobDao.getJobs( callback);
+    jobDao.getJobs(callback);
 });
 
 test("add job", done => {
@@ -64,10 +82,15 @@ test("add job", done => {
         done();
     }
 
-    jobDao.postJob(
-        { navn: "Nils Nilsen", alder: 34, adresse: "Gata 3" },
-        callback
-    );
+    let job = new Job('Trenger noen til å måke snø på taket!',
+        'Betaling etter avtale',
+        'https://vkmagasinet.no/wp-content/uploads/2015/12/h%C3%A5ndm%C3%A5king-bilde.jpg',
+        'diverse',
+        'Kari',
+        '2019-30-2 08:16',
+        2);
+
+    jobDao.postJob(job, callback);
 });
 
 test("get all persons from db", done => {
