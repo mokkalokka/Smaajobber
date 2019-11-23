@@ -39,8 +39,8 @@ class Job {
 }
 
 beforeAll(done => {
-    runSqlFile("/tests/create_tables.sql", pool, () => {
-        runSqlFile("/tests/create_testData.sql", pool, done);
+    runSqlFile("tests/create_tables.sql", pool, () => {
+        runSqlFile("tests/create_testData.sql", pool, done);
     });
 });
 
