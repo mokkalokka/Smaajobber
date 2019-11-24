@@ -4,7 +4,6 @@ const JobDao = require("../src/jobDao.js");
 const MessageDao = require("../src/messageDao.js");
 const runSqlFile = require("./runSqlFile.js");
 
-
 // GitLab CI Pool
 let pool = mysql.createPool({
     connectionLimit: 1,
@@ -170,10 +169,3 @@ test("post job", done => {
 
     jobDao.postJob(job, callback);
 });
-
-
-
-
-
-
-

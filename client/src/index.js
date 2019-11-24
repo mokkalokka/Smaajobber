@@ -127,7 +127,7 @@ class LiveFeed extends Component<Props, State> {
 }
 
 //Superklassen
-class JobList extends Component{
+class JobList extends Component<Props>{
   jobs: Job[] = [];
 
   currentPage: number = 1;
