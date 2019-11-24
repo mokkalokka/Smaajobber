@@ -70,7 +70,7 @@ test("post message", done => {
         console.log(
             "Test callback: status=" + status + ", data=" + JSON.stringify(data)
         );
-        expect(data.affectedRows).toBeGreaterThanOrEqual(1);
+        expect(data.affectedRows).toBe(1);
         done();
     }
 
@@ -96,7 +96,7 @@ test("update job", done => {
         console.log(
             "Test callback: status=" + status + ", data=" + JSON.stringify(data)
         );
-        expect(data.affectedRows).toBeGreaterThanOrEqual(0);
+        expect(data.affectedRows).toBe(1);
         done();
     }
 
@@ -142,7 +142,7 @@ test("delete job", done => {
         console.log(
             "Test callback: status=" + status + ", data.length=" + data.length
         );
-        expect(data.affectedRows).toBeGreaterThanOrEqual(1);
+        expect(data.affectedRows).toBe(1);
         done();
     }
 
@@ -154,7 +154,7 @@ test("post job", done => {
         console.log(
             "Test callback: status=" + status + ", data=" + JSON.stringify(data)
         );
-        expect(data.affectedRows).toBeGreaterThanOrEqual(1);
+        expect(data.affectedRows).toBe(1);
         done();
     }
 
