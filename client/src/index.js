@@ -22,7 +22,8 @@ class Menu extends Component {
                     <NavBar.Link to={'/category/transport'}>Transport</NavBar.Link>
                     <NavBar.Link to="/category/handverk">Håndverk</NavBar.Link>
                     <NavBar.Link to={'/category/diverse'}>Diverse</NavBar.Link>
-                    <NavBar.Link to={'/newjob'}>Legg ut ny jobb</NavBar.Link>
+                    <Button.Info onClick={() => history.push('/newjob')}>Legg ut ny jobb</Button.Info>
+
                 </NavBar>
                 <LiveFeed />
             </div>

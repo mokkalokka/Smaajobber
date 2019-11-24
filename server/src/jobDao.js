@@ -21,6 +21,7 @@ module.exports = class JobDao extends Dao {
     }
 
     getSearchResults(keyword: String, callback) {
+        keyword = '%' + keyword + '%';
         super.query(
             'select * from job where title like ? or content like ? or alias like ?',
             [keyword, keyword, keyword],
