@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import * as React from 'react';
 import { Component } from 'react-simplified';
 import { HashRouter, Route, NavLink } from 'react-router-dom';
-import {Alert, NavBar, Card, Row, Column, Button, JobInfo, Filters, MessageInfo, Pages, JobList} from './widgets';
+import { Alert, NavBar, Card, Row, Column, Button, JobInfo, Filters, MessageInfo, Pages, JobList } from './widgets';
 import { Job, jobService, Message, messageService } from './services';
 
 import { createHashHistory } from 'history';
@@ -13,7 +13,6 @@ const history = createHashHistory(); // Use history.push(...) to programmaticall
 function formatTime(dateTime: string) {
     return dateTime.split(':')[0] + ':' + dateTime.split(':')[1];
 }
-
 
 class Menu extends Component {
     render() {
@@ -110,19 +109,17 @@ class LiveFeed extends Component<Props, State> {
     };
 }
 
-
-class JobListCategory extends Component <{ match: { params: { category: string } } }> {
+class JobListCategory extends Component<{ match: { params: { category: string } } }> {
     jobs: Job[] = [];
 
-    render(){
-        if(this.jobs.length > 0){
-            return(<JobList jobs={this.jobs}/>)
-        }
-        else return null;
+    render() {
+        if (this.jobs.length > 0) {
+            return <JobList jobs={this.jobs} />;
+        } else return null;
     }
 
     mounted() {
-        console.log("Category mounted: " + this.props.match.params.category);
+        console.log('Category mounted: ' + this.props.match.params.category);
         jobService
             .getCategory(this.props.match.params.category)
             .then(jobs => (this.jobs = jobs))
@@ -133,13 +130,11 @@ class JobListCategory extends Component <{ match: { params: { category: string }
 class SearchResults extends Component<{ match: { params: { keyword: string } } }> {
     jobs: Job[] = [];
 
-    render(){
-        if(this.jobs.length > 0){
-            return(<JobList jobs={this.jobs}/>)
-        }
-        else return null;
+    render() {
+        if (this.jobs.length > 0) {
+            return <JobList jobs={this.jobs} />;
+        } else return null;
     }
-
 
     mounted() {
         jobService
@@ -152,11 +147,10 @@ class SearchResults extends Component<{ match: { params: { keyword: string } } }
 class FrontPage extends Component {
     jobs: Job[] = [];
 
-    render(){
-        if(this.jobs.length > 0){
-            return(<JobList jobs={this.jobs}/>)
-        }
-        else return null;
+    render() {
+        if (this.jobs.length > 0) {
+            return <JobList jobs={this.jobs} />;
+        } else return null;
     }
 
     mounted() {
@@ -168,7 +162,7 @@ class FrontPage extends Component {
 }
 
 class JobDetails extends Component<{ match: { params: { id: number } } }> {
-    job: Job = new Job;
+    job: Job = new Job();
 
     render() {
         if (this.job != null && this.job.dateTime) {
@@ -226,21 +220,23 @@ class MessageBoard extends Component<{ job_id: number }> {
                                     value={this.message.alias}
                                     type="text"
                                     placeholder="alias her:"
-                                    onChange={(event: SyntheticInputEvent<HTMLInputElement>) => (this.message.alias = event.target.value)}
+                                    onChange={(event: SyntheticInputEvent<HTMLInputElement>) =>
+                                        (this.message.alias = event.target.value)
+                                    }
                                 />
                             </Column>
                         </Row>
                         <Row>
                             <Column>
-                <textarea
-                    className={'rounded'}
-                    value={this.message.content}
-                    id={'messageContent'}
-                    placeholder="melding her:"
-                    onChange={(event: SyntheticInputEvent<HTMLInputElement>) =>
-                        (this.message.content = event.target.value)
-                    }
-                />
+                                <textarea
+                                    className={'rounded'}
+                                    value={this.message.content}
+                                    id={'messageContent'}
+                                    placeholder="melding her:"
+                                    onChange={(event: SyntheticInputEvent<HTMLInputElement>) =>
+                                        (this.message.content = event.target.value)
+                                    }
+                                />
                             </Column>
                         </Row>
                         <Row>
@@ -303,13 +299,13 @@ class JobEdit extends Component<{ match: { params: { id?: number } } }> {
                     <Row>
                         <Column width={2}>innhold:</Column>
                         <Column>
-              <textarea
-                  type="text"
-                  value={this.job.content}
-                  onChange={(event: SyntheticInputEvent<HTMLInputElement>) => {
-                      if (this.job) this.job.content = event.target.value;
-                  }}
-              />
+                            <textarea
+                                type="text"
+                                value={this.job.content}
+                                onChange={(event: SyntheticInputEvent<HTMLInputElement>) => {
+                                    if (this.job) this.job.content = event.target.value;
+                                }}
+                            />
                         </Column>
                     </Row>
                     <Row>
@@ -377,9 +373,9 @@ class JobEdit extends Component<{ match: { params: { id?: number } } }> {
 
         this.props.match.params.id
             ? jobService
-                .getJob(this.props.match.params.id)
-                .then(job => (this.job = job))
-                .catch((error: Error) => Alert.danger(error.message))
+                  .getJob(this.props.match.params.id)
+                  .then(job => (this.job = job))
+                  .catch((error: Error) => Alert.danger(error.message))
             : (this.title = 'Registrer ny jobb');
         this.job = new Job();
         this.job.importance = 1;
@@ -392,7 +388,6 @@ class JobEdit extends Component<{ match: { params: { id?: number } } }> {
                 let joblist = JobList.instance();
                 if (joblist) joblist.mounted();
                 this.job.id ? history.push('/jobs/' + this.job.id) : history.push('/');
-
             })
             .catch((error: Error) => Alert.danger(error.message));
     }

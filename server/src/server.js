@@ -15,8 +15,8 @@ let pool = mysql.createPool({
 });
 
 const public_path = path.join(__dirname, '/../../client/public');
-const JobDao = require("./jobDao.js");
-const MessageDao = require("./messageDao.js");
+const JobDao = require('./jobDao.js');
+const MessageDao = require('./messageDao.js');
 let jobDao = new JobDao(pool);
 let messageDao = new MessageDao(pool);
 
@@ -24,8 +24,6 @@ let app = express();
 
 app.use(express.static(public_path));
 app.use(express.json()); // For parsing application/json
-
-
 
 //----------- JOB -----------//
 
@@ -55,7 +53,6 @@ app.get('/livefeed/:number', (req: express$Request, res: express$Response) => {
         res.status(status);
         res.json(data);
     });
-
 });
 
 app.get('/jobs/:id', (req: express$Request, res: express$Response) => {
@@ -67,44 +64,41 @@ app.get('/jobs/:id', (req: express$Request, res: express$Response) => {
 });
 
 app.put('/jobs', (req: { body: Object }, res: express$Response) => {
-    jobDao.updateJob(req.body,(status, data) => {
+    jobDao.updateJob(req.body, (status, data) => {
         res.status(status);
         res.json(data);
     });
 });
 
 app.post('/jobs', (req: { body: Object }, res: express$Response) => {
-    jobDao.postJob(req.body,(status, data) => {
+    jobDao.postJob(req.body, (status, data) => {
         res.status(status);
         res.json(data);
     });
 });
 
 app.delete('/jobs/:id', (req: express$Request, res: express$Response) => {
-    jobDao.deleteJob(req.params.id,(status, data) => {
+    jobDao.deleteJob(req.params.id, (status, data) => {
         res.status(status);
         res.json(data);
     });
 });
 
-
 //----------- MESSAGE -----------//
 
 app.get('/messages/:id', (req: express$Request, res: express$Response) => {
-    messageDao.getMessages(req.params.id,(status, data) => {
+    messageDao.getMessages(req.params.id, (status, data) => {
         res.status(status);
         res.json(data);
     });
 });
 
 app.post('/jobs/:id/messages', (req: { body: Object }, res: express$Response) => {
-    messageDao.postMessage(req.body,(status, data) => {
+    messageDao.postMessage(req.body, (status, data) => {
         res.status(status);
         res.json(data);
     });
 });
-
-
 
 // The listen promise can be used to wait for the web server to start (for instance in your tests)
 export let listen = new Promise<void>((resolve, reject) => {
