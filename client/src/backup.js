@@ -1,10 +1,11 @@
+/*
 // @flow
 
 import ReactDOM from 'react-dom';
 import * as React from 'react';
 import { Component } from 'react-simplified';
 import { HashRouter, Route, NavLink } from 'react-router-dom';
-import {Alert, NavBar, Card, Row, Column, Button, JobInfo, Filters, MessageInfo, Pages, JobList} from './widgets';
+import { Alert, NavBar, Card, Row, Column, Button, JobInfo, Filters, MessageInfo, Pages } from './widgets';
 import { Job, jobService, Message, messageService } from './services';
 
 import { createHashHistory } from 'history';
@@ -14,6 +15,22 @@ function formatTime(dateTime: string) {
     return dateTime.split(':')[0] + ':' + dateTime.split(':')[1];
 }
 
+//config variables:
+let jobsPrPage: number = 4;
+
+function getJobPage(jobs: Array<Job>, page: number) {
+    return jobs.filter((job, indx) => (page - 1) * jobsPrPage <= indx && indx < jobsPrPage * page);
+}
+
+function formatPreviewStr(content: string) {
+    let contentArray = content.split('.');
+
+    if (contentArray.length > 1) {
+        return contentArray[0] + ' ...';
+    } else {
+        return contentArray[0];
+    }
+}
 
 class Menu extends Component {
     render() {
@@ -110,31 +127,93 @@ class LiveFeed extends Component<Props, State> {
     };
 }
 
-
-class JobListCategory extends Component <{ match: { params: { category: string } } }> {
+//Superklassen
+class JobList extends Component<{jobs: Job[]}>{
     jobs: Job[] = [];
 
+    currentPage: number = 1;
+
+    setCurrentPage(currentPage: number) {
+        this.currentPage = currentPage;
+        console.log('CurrentPage: ' + this.currentPage);
+    }
+
+    render() {
+        if (!this.jobs) return null;
+        else {
+            return (
+                <ul>
+                    <Pages jobs={this.jobs} onClick={this.setCurrentPage} />
+                    {getJobPage(this.jobs, this.currentPage).map(job => (
+                        <li key={job.id}>
+                            <Card>
+                                <Row>
+                                    <NavLink activeStyle={{ color: 'darkblue' }} exact to={'/jobs/' + job.id}>
+                                        <JobInfo
+                                            title={job.title}
+                                            content={formatPreviewStr(job.content)}
+                                            alias={job.alias}
+                                            dateTime={formatTime(job.dateTime)}
+                                            imageUrl={job.imageUrl}
+                                        />
+                                    </NavLink>
+                                </Row>
+                            </Card>
+                        </li>
+                    ))}
+                </ul>
+            );
+        }
+    }
+
+    /!*  mounted() {
+        jobService
+          .getJobs()
+          .then(jobs => (this.jobs = jobs))
+          .catch((error: Error) => Alert.danger(error.message));
+      }*!/
+}
+
+class JobListCategory extends Component <{ match: { params: { category: string } } }> {
+    /!*  setCurrentPage(currentPage: number) {
+        super.setCurrentPage(currentPage);
+      }
+
+      render(): null | * {
+        return super.render();
+      }*!/
+
+    jobs: ?Job[] = [];
+
     render(){
-        if(this.jobs.length > 0){
+        if(this.jobs){
             return(<JobList jobs={this.jobs}/>)
         }
         else return null;
     }
 
     mounted() {
-        console.log("Category mounted: " + this.props.match.params.category);
         jobService
             .getCategory(this.props.match.params.category)
             .then(jobs => (this.jobs = jobs))
             .catch((error: Error) => Alert.danger(error.message));
+        //this.currentPage = 1;
     }
 }
 
 class SearchResults extends Component<{ match: { params: { keyword: string } } }> {
-    jobs: Job[] = [];
+    /!*  setCurrentPage(currentPage: number) {
+        super.setCurrentPage(currentPage);
+      }*!/
+
+    /!*  render(): null | * {
+        return super.render();
+      }*!/
+
+    jobs: ?Job[] = [];
 
     render(){
-        if(this.jobs.length > 0){
+        if(this.jobs){
             return(<JobList jobs={this.jobs}/>)
         }
         else return null;
@@ -150,10 +229,17 @@ class SearchResults extends Component<{ match: { params: { keyword: string } } }
 }
 
 class FrontPage extends Component {
-    jobs: Job[] = [];
+    /!*  setCurrentPage(currentPage: number) {
+        super.setCurrentPage(currentPage);
+      }
+
+      render(): * | null {
+        return super.render();
+      }*!/
+    jobs: ?Job[] = [];
 
     render(){
-        if(this.jobs.length > 0){
+        if(this.jobs){
             return(<JobList jobs={this.jobs}/>)
         }
         else return null;
@@ -391,8 +477,7 @@ class JobEdit extends Component<{ match: { params: { id?: number } } }> {
             .then(() => {
                 let joblist = JobList.instance();
                 if (joblist) joblist.mounted();
-                this.job.id ? history.push('/jobs/' + this.job.id) : history.push('/');
-
+                this.job.id ? history.push('/jobs/' + this.job.id) : history.push('/jobs/');
             })
             .catch((error: Error) => Alert.danger(error.message));
     }
@@ -404,7 +489,7 @@ class JobEdit extends Component<{ match: { params: { id?: number } } }> {
             .then(() => {
                 let joblist = JobList.instance();
                 if (joblist) joblist.mounted();
-                if (this.job) history.push('/');
+                if (this.job) history.push('/jobs/');
             })
             .catch((error: Error) => Alert.danger(error.message));
     }
@@ -428,3 +513,4 @@ if (root)
         </HashRouter>,
         root
     );
+*/

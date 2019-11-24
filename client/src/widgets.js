@@ -6,6 +6,28 @@ import { Component } from 'react-simplified';
 import { NavLink } from 'react-router-dom';
 import {Job} from "./services";
 
+function formatTime(dateTime: string) {
+    return dateTime.split(':')[0] + ':' + dateTime.split(':')[1];
+}
+
+
+//config variables:
+let jobsPrPage: number = 4;
+
+function getJobPage(jobs: Array<Job>, page: number) {
+    return jobs.filter((job, indx) => (page - 1) * jobsPrPage <= indx && indx < jobsPrPage * page);
+}
+
+function formatPreviewStr(content: string) {
+    let contentArray = content.split('.');
+
+    if (contentArray.length > 1) {
+        return contentArray[0] + ' ...';
+    } else {
+        return contentArray[0];
+    }
+}
+
 /**
  * Renders alert messages using Bootstrap classes.
  */
@@ -154,7 +176,7 @@ export class Filters extends Component<{}> {
                     </div>
 
                     <div className="row">
-                        <button className="btn btn-dark">Søk</button>
+                        <button onClick={ () => Alert.danger("Denne funkjsonen er kun for design")} className="btn btn-dark">Søk</button>
                     </div>
                 </div>
 
@@ -269,6 +291,71 @@ export class JobInfo extends Component<{ title: React.Node , content: React.Node
         );
     }
 }
+
+
+type JobListProps = {
+    jobs: Job[]
+}
+type JobListState = {
+    jobs: Job[]
+};
+
+export class JobList extends Component<JobListProps, JobListState>{
+    state = {
+        jobs: []
+    };
+
+    currentPage: number = 1;
+
+    setCurrentPage(currentPage: number) {
+        this.currentPage = currentPage;
+        console.log('CurrentPage: ' + this.currentPage);
+    }
+
+    render() {
+        if (this.state.jobs.length == 0) return null;
+        else {
+            return (
+                <ul>
+                    <Pages jobs={this.state.jobs} onClick={this.setCurrentPage} />
+                    {getJobPage(this.state.jobs, this.currentPage).map(job => (
+                        <li key={job.id}>
+                            <Card>
+                                <Row>
+                                    <NavLink activeStyle={{ color: 'darkblue' }} exact to={'/jobs/' + job.id}>
+                                        <JobInfo
+                                            title={job.title}
+                                            content={formatPreviewStr(job.content)}
+                                            alias={job.alias}
+                                            dateTime={formatTime(job.dateTime)}
+                                            imageUrl={job.imageUrl}
+                                        />
+                                    </NavLink>
+                                </Row>
+                            </Card>
+                        </li>
+                    ))}
+                </ul>
+            );
+        }
+    }
+
+   componentDidUpdate(){
+        console.log("Jobblist mounted");
+       if(this.props.jobs != this.state.jobs){
+           this.setState({jobs: this.props.jobs});
+       }
+    }
+
+    mounted() {
+        console.log("Jobblist mounted");
+        if(this.props.jobs){
+            this.setState({jobs: this.props.jobs});
+        }
+    }
+}
+
+
 
 /**
  * Renders a row using Bootstrap classes
