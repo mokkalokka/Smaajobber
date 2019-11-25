@@ -161,7 +161,7 @@ export class NavSearch extends Component<Props, State> {
                             onChange={(event: SyntheticInputEvent<HTMLInputElement>) =>
                                 this.setState({ keyword: event.target.value })
                             }
-                        ></input>
+                        />
                         <button
                             className="btn btn-outline-info my-2 my-sm-0"
                             type="submit"

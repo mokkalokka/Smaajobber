@@ -119,7 +119,6 @@ class JobListCategory extends Component<{ match: { params: { category: string } 
     }
 
     mounted() {
-        console.log('Category mounted: ' + this.props.match.params.category);
         jobService
             .getCategory(this.props.match.params.category)
             .then(jobs => (this.jobs = jobs))
