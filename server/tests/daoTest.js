@@ -167,3 +167,13 @@ test('post job', done => {
 
     jobDao.postJob(job, callback);
 });
+
+test('Search job', done => {
+    function callback(status, data) {
+        console.log('Test callback: status=' + status + ', data.length=' + data.length);
+        expect(data.length).toBe(1);
+        done();
+    }
+
+    jobDao.getSearchResults('Kari', callback);
+});
