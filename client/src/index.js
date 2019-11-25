@@ -23,7 +23,6 @@ class Menu extends Component {
                     <NavBar.Link to="/category/handverk">Håndverk</NavBar.Link>
                     <NavBar.Link to={'/category/diverse'}>Diverse</NavBar.Link>
                     <Button.Info onClick={() => history.push('/newjob')}>Legg ut ny jobb</Button.Info>
-
                 </NavBar>
                 <LiveFeed />
             </div>
@@ -374,9 +373,9 @@ class JobEdit extends Component<{ match: { params: { id?: number } } }> {
 
         this.props.match.params.id
             ? jobService
-                  .getJob(this.props.match.params.id)
-                  .then(job => (this.job = job))
-                  .catch((error: Error) => Alert.danger(error.message))
+                .getJob(this.props.match.params.id)
+                .then(job => (this.job = job))
+                .catch((error: Error) => Alert.danger(error.message))
             : (this.title = 'Registrer ny jobb');
         this.job = new Job();
         this.job.importance = 1;
@@ -389,8 +388,11 @@ class JobEdit extends Component<{ match: { params: { id?: number } } }> {
                 let joblist = JobList.instance();
                 if (joblist) joblist.mounted();
                 this.job.id ? history.push('/jobs/' + this.job.id) : history.push('/');
+                Alert.info("Jobben ble lagret!");
             })
-            .catch((error: Error) => Alert.danger(error.message));
+            .catch((error: Error) => {
+                Alert.danger("Ops det oppstod en feil: " + error.message);
+            })
     }
 
     delete() {
@@ -401,8 +403,9 @@ class JobEdit extends Component<{ match: { params: { id?: number } } }> {
                 let joblist = JobList.instance();
                 if (joblist) joblist.mounted();
                 if (this.job) history.push('/');
+                Alert.info("Jobben ble slettet!");
             })
-            .catch((error: Error) => Alert.danger(error.message));
+            .catch((error: Error) => Alert.danger("Ops det oppstod en feil: " + error.message));
     }
 }
 

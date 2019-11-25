@@ -37,7 +37,8 @@ export class Alert extends Component {
     render() {
         return (
             <>
-                {this.alerts.map((alert, i) => (
+                {this.alerts.filter(alert => alert.id >= Alert.nextId - 2)
+                    .map((alert, i) => (
                     <div key={alert.id} className={'alert alert-' + alert.type} role="alert">
                         {alert.text}
                         <button
