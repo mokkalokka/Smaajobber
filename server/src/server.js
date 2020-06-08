@@ -5,13 +5,16 @@ import path from 'path';
 import reload from 'reload';
 import fs from 'fs';
 import mysql from 'mysql';
+const properties =  require('./properties.js');
+const props =  new properties.TestProperties();
+
 
 let pool = mysql.createPool({
-    host: 'mysql.stud.ntnu.no',
-    user: 'michaesl_public',
-    password: '0987654321',
-    database: 'michaesl_smajobber',
-    dateStrings: true
+    host: props.host,
+    user: props.user,
+    password: props.password,
+    database: props.database,
+    dateStrings: true,
 });
 
 const public_path = path.join(__dirname, '/../../client/public');
